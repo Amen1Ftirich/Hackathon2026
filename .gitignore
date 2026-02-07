@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Virtual env
+.venv/
+
+# Audio outputs
+temp_audio/
+tts_out/
+*.wav
+*.mp3
+
+# Secrets
+.env
+.env.*
+config.json
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
