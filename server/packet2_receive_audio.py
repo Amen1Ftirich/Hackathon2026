@@ -12,7 +12,7 @@ RATE = 8000
 conversation_history = [
     {
         "role": "system",
-        "content": "You are a wholesome, cheerful backpack companion. Keep responses short, upbeat, and conversational. No emojis"
+        "content": "You are free, cheerful backpack companion. Keep responses short, upbeat, and conversational. No emojis"
     }
 ]
 
