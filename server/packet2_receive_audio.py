@@ -26,6 +26,23 @@ def speak(text):
     tts.runAndWait()
     send_state("IDLE")
 
+def transcribe_audio(filepath):
+    with open(filepath, "rb") as audio_file:
+        transcript = openai.audio.transcriptions.create(
+            model="gpt-4o-mini-transcribe",
+            file=audio_file
+        )
+    return transcript.text
+def get_ai_response(user_text):
+    response = openai.chat.completions.create(
+        model="gpt-4.1-nano",
+        messages=[
+            {"role": "system", "content": "You are a friendly backpack companion."},
+            {"role": "user", "content": user_text}
+        ],
+        max_tokens=80
+    )
+    return response.choices[0].message.content
 
 while True:
     line = ser.readline()
@@ -54,5 +71,14 @@ while True:
 
         print("Saved", filename)
 
-        response_text = "I heard you."
-        speak(response_text)
+        send_state("THINKING")
+
+        user_text = transcribe_audio(filename)
+        print("User said:", user_text)
+
+        reply = get_ai_response(user_text)
+        print("AI reply:", reply)
+
+        speak(reply)
+
+
