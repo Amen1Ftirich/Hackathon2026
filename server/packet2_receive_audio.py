@@ -3,6 +3,7 @@ import time
 import wave
 import numpy as np # type: ignore
 import pyttsx3
+import openai
 
 
 PORT = "COM5"
@@ -53,5 +54,5 @@ while True:
 
         print("Saved", filename)
 
-        response_text = "I heard you. This is a test response."
+        response_text = "I heard you."
         speak(response_text)
