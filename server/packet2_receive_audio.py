@@ -11,7 +11,9 @@ RATE = 8000
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 time.sleep(2)
-
+tts = pyttsx3.init()
+tts.setProperty("rate", 170) # speeking speed
+tts.setProperty("volume", 1.0) # max volume
 def send_state(state):
     msg = f"STATE:{state}\n"
     ser.write(msg.encode("utf-8"))
