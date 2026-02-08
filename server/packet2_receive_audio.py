@@ -2,6 +2,8 @@ import serial # type: ignore
 import time
 import wave
 import numpy as np # type: ignore
+import pyttsx3
+
 
 PORT = "COM5"
 BAUD = 115200
