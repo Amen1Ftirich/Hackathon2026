@@ -12,8 +12,6 @@
 // Audio settings
 // =====================
 const int SAMPLE_RATE = 8000;
-const float SECONDS = 1.0;
-const int N_SAMPLES = SAMPLE_RATE * SECONDS;
 
 // =====================
 // System state enum
@@ -138,18 +136,21 @@ void ledsSpeaking() {
 void recordAudio() {
   Serial.println("START_AUDIO");
 
-
   unsigned long usPerSample = 1000000UL / SAMPLE_RATE;
 
-  for (int i = 0; i < N_SAMPLES; i++) {
-    int x = analogRead(MIC_PIN);          // 0–4095
-    uint8_t sample = (uint8_t)(x >> 4);  // convert to 8-bit
+  // Record WHILE button is held
+  while (digitalRead(BTN_PIN) == LOW) {
+    currentState = STATE_LISTENING;
+    updateLEDs();
+    int x = analogRead(MIC_PIN);           // 0–4095
+    uint8_t sample = (uint8_t)(x >> 4);    // 8-bit
     Serial.write(sample);
     delayMicroseconds(usPerSample);
   }
 
   Serial.println("\nEND_AUDIO");
 }
+
 
 /*
 #define MIC_PIN A0
@@ -218,3 +219,4 @@ void readSerialState() {
 void loop() {
   readSerialState();
 }*/
+

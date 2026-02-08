@@ -11,19 +11,17 @@ ser = serial.Serial(PORT, BAUD, timeout=1)
 time.sleep(2)
 
 def send_state(state):
-    msg = f"SYSTEMState currentState = {state}\n"
+    msg = f"STATE:{state}\n"
     ser.write(msg.encode("utf-8"))
     ser.flush()
-
 print("Waiting for audio...")
 
 while True:
     line = ser.readline()
 
     if b"START_AUDIO" in line:
+        #send_state("LISTENING")
         print("Recording...")
-        send_state("STATE_LISTENING")
-
         raw = bytearray()
 
         while True:
@@ -32,8 +30,8 @@ while True:
                 break
             raw.extend(data)
 
-        send_state("STATE_THINKING")
-
+        send_state("THINKING")
+    
         samples = np.frombuffer(raw, dtype=np.uint8)
 
         filename = f"temp_audio/audio_{int(time.time())}.wav"
@@ -45,6 +43,6 @@ while True:
 
         print("Saved", filename)
 
-        send_state("STATE_SPEAKING")
+        send_state("SPEAKING")
         time.sleep(1)
-        send_state("STATE_IDLE")
+        send_state("IDLE")
