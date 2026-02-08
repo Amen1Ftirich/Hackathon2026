@@ -4,7 +4,7 @@
 #define MIC_PIN A0
 #define BTN_PIN 2
 
-#define LED1 5   // LISTENING / IDLE
+#define LED1 5   // LISTENING
 #define LED2 6   // THINKING
 #define LED3 9   // SPEAKING
 
@@ -44,7 +44,7 @@ void setup() {
 // MAIN LOOP
 // =====================
 void loop() {
-  // ALWAYS listen for laptop commands
+  // Always listen for laptop commands
   readSerialCommands();
 
   // Handle button press for recording
@@ -114,37 +114,20 @@ void ledsIdle() {
 
 void ledsListening() {
   digitalWrite(LED1, HIGH);
-  digitalWrite(LED2, HIGH);
-  digitalWrite(LED3, HIGH);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED3, LOW);
 }
 
 void ledsThinking() {
-  while (1) {
-    ledsIdle();
-    delay(500);
-    digitalWrite(LED1, HIGH);
-    delay(500);
-    digitalWrite(LED2, HIGH);
-    delay(500);
-    digitalWrite(LED3, HIGH);
-    delay(500);
-  }
-  
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, HIGH);
+  digitalWrite(LED3, LOW);
 }
 
 void ledsSpeaking() {
-  while (1){
-    ledsIdle();
-    delay(100);
-    digitalWrite(LED1, LOW);
-    digitalWrite(LED2, HIGH);
-    digitalWrite(LED3, LOW);
-    delay(100);
-    digitalWrite(LED1, HIGH);
-    digitalWrite(LED3, HIGH);
-    delay(100);
-
-  }
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, LOW);
+  digitalWrite(LED3, HIGH);
 }
 
 // =====================
@@ -155,85 +138,13 @@ void recordAudio() {
 
   unsigned long usPerSample = 1000000UL / SAMPLE_RATE;
 
-  // Record WHILE button is held
+  // Stream audio while button is held
   while (digitalRead(BTN_PIN) == LOW) {
-    currentState = STATE_LISTENING;
-    updateLEDs();
-    int x = analogRead(MIC_PIN);           // 0–4095
-    uint8_t sample = (uint8_t)(x >> 4);    // 8-bit
+    int x = analogRead(MIC_PIN);
+    uint8_t sample = (uint8_t)(x >> 4);
     Serial.write(sample);
     delayMicroseconds(usPerSample);
   }
 
   Serial.println("\nEND_AUDIO");
 }
-
-
-/*
-#define MIC_PIN A0
-#define BTN_PIN 2
-
-#define LED1 5
-#define LED2 6
-#define LED3 9
-
-enum SystemState {
-  STATE_IDLE,
-  STATE_LISTENING,
-  STATE_THINKING,
-  STATE_SPEAKING
-};
-
-SystemState currentState = STATE_IDLE;
-
-void setup() {
-  Serial.begin(115200);
-
-  pinMode(BTN_PIN, INPUT_PULLUP);
-  pinMode(LED1, OUTPUT);
-  pinMode(LED2, OUTPUT);
-  pinMode(LED3, OUTPUT);
-
-  //setIdle();
-}
-
-void setIdle() {
-  digitalWrite(LED1, HIGH);
-  digitalWrite(LED2, HIGH);
-  digitalWrite(LED3, HIGH);
-}
-
-void setListening() {
-  digitalWrite(LED1, HIGH);
-  digitalWrite(LED2, HIGH);
-  digitalWrite(LED3, LOW);
-}
-
-void setThinking() {
-  digitalWrite(LED1, LOW);
-  digitalWrite(LED2, HIGH);
-  digitalWrite(LED3, HIGH);
-}
-
-void setSpeaking() {
-  digitalWrite(LED1, HIGH);
-  digitalWrite(LED2, LOW);
-  digitalWrite(LED3, HIGH);
-}
-
-void readSerialState() {
-  if (!Serial.available()) return;
-
-  String cmd = Serial.readStringUntil('\n');
-  cmd.trim();
-
-  if (cmd == "IDLE") setIdle();
-  else if (cmd == "LISTENING") setListening();
-  else if (cmd == "THINKING") setThinking();
-  else if (cmd == "SPEAKING") setSpeaking();
-}
-
-void loop() {
-  readSerialState();
-}*/
-

@@ -12,9 +12,6 @@ RATE = 8000
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 time.sleep(2)
-tts = pyttsx3.init()
-tts.setProperty("rate", 170) # speeking speed
-tts.setProperty("volume", 1.0) # max volume
 def send_state(state):
     msg = f"STATE:{state}\n"
     ser.write(msg.encode("utf-8"))
@@ -22,8 +19,17 @@ def send_state(state):
 print("Waiting for audio...")
 def speak(text):
     send_state("SPEAKING")
-    tts.say(text)
-    tts.runAndWait()
+
+    engine = pyttsx3.init()
+    engine.setProperty("rate", 170)
+    engine.setProperty("volume", 1.0)
+
+    engine.say(text)
+    engine.runAndWait()
+
+    engine.stop()
+    del engine
+
     send_state("IDLE")
 
 def transcribe_audio(filepath):
@@ -80,5 +86,6 @@ while True:
         print("AI reply:", reply)
 
         speak(reply)
+        
 
 
