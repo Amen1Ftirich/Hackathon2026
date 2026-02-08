@@ -9,6 +9,12 @@ import openai
 PORT = "COM5"
 BAUD = 115200
 RATE = 8000
+conversation_history = [
+    {
+        "role": "system",
+        "content": "You are a friendly, cheerful backpack companion. Keep responses short, upbeat, and conversational. No emojis"
+    }
+]
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 time.sleep(2)
@@ -41,15 +47,28 @@ def transcribe_audio(filepath):
         )
     return transcript.text
 def get_ai_response(user_text):
+    # Add user's message to memory
+    conversation_history.append({
+        "role": "user",
+        "content": user_text
+    })
+
     response = openai.chat.completions.create(
         model="gpt-4.1-nano",
-        messages=[
-            {"role": "system", "content": "You are a friendly backpack companion."},
-            {"role": "user", "content": user_text}
-        ],
-        max_tokens=80
+        messages=conversation_history,
+        max_tokens=90
     )
-    return response.choices[0].message.content
+
+    reply = response.choices[0].message.content
+
+    # Add assistant reply to memory
+    conversation_history.append({
+        "role": "assistant",
+        "content": reply
+    })
+
+    return reply
+
 
 while True:
     line = ser.readline()
