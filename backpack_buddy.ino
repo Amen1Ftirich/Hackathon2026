@@ -33,6 +33,10 @@ void setup() {
   Serial.println("READY");
 }
 
+const int SAMPLE_RATE = 8000;
+const float SECONDS = 1.0;
+const int N_SAMPLES = SAMPLE_RATE * SECONDS;
+
 void loop() {
   static bool lastBtn = HIGH;
   bool btn = digitalRead(PIN_BTN);
@@ -40,25 +44,25 @@ void loop() {
   if (lastBtn == HIGH && btn == LOW) {
     delay(25);
     if (digitalRead(PIN_BTN) == LOW) {
-      Serial.println("BTN PRESSED");
-      currentState = LISTENING;
+      Serial.println("START_AUDIO");
       setLEDsListening();
 
-      // sample mic for debug
-      for (int i = 0; i < 20; i++) {
-        int mic = analogRead(MIC_PIN);
-        Serial.print("MIC: ");
-        Serial.println(mic);
-        delay(50);
+      unsigned long usPerSample = 1000000UL / SAMPLE_RATE;
+
+      for (int i = 0; i < N_SAMPLES; i++) {
+        int x = analogRead(MIC_PIN);
+        uint8_t b = (uint8_t)(x >> 4); // 8-bit
+        Serial.write(b);
+        delayMicroseconds(usPerSample);
       }
 
-      currentState = IDLE;
-      //setLEDsIdle();
-      Serial.println("DONE");
+      Serial.println("\nEND_AUDIO");
+      setLEDsIdle();
     }
   }
   lastBtn = btn;
 }
+
 
 
 
