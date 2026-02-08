@@ -1,14 +1,19 @@
-import serial
+import serial # type: ignore
 import time
 import wave
-import numpy as np
+import numpy as np # type: ignore
 
-PORT = "COM5"      # CHANGE THIS
+PORT = "COM5"
 BAUD = 115200
 RATE = 8000
 
 ser = serial.Serial(PORT, BAUD, timeout=1)
 time.sleep(2)
+
+def send_state(state):
+    msg = f"SYSTEMState currentState = {state}\n"
+    ser.write(msg.encode("utf-8"))
+    ser.flush()
 
 print("Waiting for audio...")
 
@@ -17,6 +22,8 @@ while True:
 
     if b"START_AUDIO" in line:
         print("Recording...")
+        send_state("STATE_LISTENING")
+
         raw = bytearray()
 
         while True:
@@ -25,9 +32,11 @@ while True:
                 break
             raw.extend(data)
 
+        send_state("STATE_THINKING")
+
         samples = np.frombuffer(raw, dtype=np.uint8)
 
-        filename = f"audio_{int(time.time())}.wav"
+        filename = f"temp_audio/audio_{int(time.time())}.wav"
         with wave.open(filename, "wb") as wf:
             wf.setnchannels(1)
             wf.setsampwidth(1)
@@ -35,3 +44,7 @@ while True:
             wf.writeframes(samples.tobytes())
 
         print("Saved", filename)
+
+        send_state("STATE_SPEAKING")
+        time.sleep(1)
+        send_state("STATE_IDLE")
