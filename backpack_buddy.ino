@@ -115,19 +115,36 @@ void ledsIdle() {
 void ledsListening() {
   digitalWrite(LED1, HIGH);
   digitalWrite(LED2, HIGH);
-  digitalWrite(LED3, LOW);
+  digitalWrite(LED3, HIGH);
 }
 
 void ledsThinking() {
-  digitalWrite(LED1, LOW);
-  digitalWrite(LED2, HIGH);
-  digitalWrite(LED3, HIGH);
+  while (1) {
+    ledsIdle();
+    delay(500);
+    digitalWrite(LED1, HIGH);
+    delay(500);
+    digitalWrite(LED2, HIGH);
+    delay(500);
+    digitalWrite(LED3, HIGH);
+    delay(500);
+  }
+  
 }
 
 void ledsSpeaking() {
-  digitalWrite(LED1, HIGH);
-  digitalWrite(LED2, LOW);
-  digitalWrite(LED3, HIGH);
+  while (1){
+    ledsIdle();
+    delay(100);
+    digitalWrite(LED1, LOW);
+    digitalWrite(LED2, HIGH);
+    digitalWrite(LED3, LOW);
+    delay(100);
+    digitalWrite(LED1, HIGH);
+    digitalWrite(LED3, HIGH);
+    delay(100);
+
+  }
 }
 
 // =====================
