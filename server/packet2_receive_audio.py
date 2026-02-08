@@ -53,6 +53,5 @@ while True:
 
         print("Saved", filename)
 
-        send_state("SPEAKING")
-        time.sleep(1)
-        send_state("IDLE")
+        response_text = "I heard you. This is a test response."
+        speak(response_text)
