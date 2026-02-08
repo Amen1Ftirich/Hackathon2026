@@ -19,6 +19,12 @@ def send_state(state):
     ser.write(msg.encode("utf-8"))
     ser.flush()
 print("Waiting for audio...")
+def speak(text):
+    send_state("SPEAKING")
+    tts.say(text)
+    tts.runAndWait()
+    send_state("IDLE")
+
 
 while True:
     line = ser.readline()
